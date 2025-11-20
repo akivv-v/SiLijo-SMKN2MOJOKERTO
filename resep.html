@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspirasi Resep - SiLijo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- STYLE KONSISTEN --- */
+        :root {
+            --primary-green: #1a3c24;
+            --dark-green: #267029;
+            --light-bg: #F0F9F0;
+            --text-dark: #333333;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            background-color: #fff;
+        }
+
+        /* Navbar & Footer */
+        .navbar {
+            padding: 1.5rem 0;
+            background: white;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-green);
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary-green);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary-custom:hover {
+            background-color: var(--dark-green);
+            color: white;
+        }
+
+        /* Header Resep */
+        .recipe-header {
+            background: linear-gradient(rgba(26, 60, 36, 0.8), rgba(23, 57, 33, 0.8)), url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 80px 0;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Recipe Card */
+        .recipe-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+            height: 100%;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .recipe-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .recipe-body {
+            padding: 20px;
+        }
+
+        .recipe-meta {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        /* MODAL STYLING */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background-color: var(--light-bg);
+            border-bottom: none;
+            padding: 20px 30px;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .step-number {
+            background: var(--primary-green);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        /* Buying Options */
+        .buy-option-card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            height: 38%;
+            background: #fff;
+            transition: 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .buy-option-card:hover {
+            border-color: var(--primary-green);
+            background: var(--light-bg);
+        }
+
+        .buy-option-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .ingredient-check-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.9rem;
+        }
+
+        /* Tambahan untuk List Bahan agar Scrollable */
+        .scrollable-list {
+            max-height: 100px;
+            /* Tinggi maksimal kotak */
+            overflow-y: auto;
+            /* Munculkan scrollbar jika isi melebihi tinggi */
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--primary-green);
+            /* Garis hijau di kiri */
+            padding-left: 10px;
+            font-size: 0.9rem;
+            color: #6c757d;
+            /* text-muted */
+        }
+
+        /* Scrollbar styling (Opsional - agar lebih cantik) */
+        .scrollable-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .scrollable-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .scrollable-list::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 5px;
+        }
+
+        .scrollable-list::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-green);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a3c24;
+            color: white;
+            padding: 60px 0 20px 0;
+            margin-top: 80px;
+        }
+
+        footer a {
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="bi bi-basket2-fill"></i> SiLijo
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav gap-4">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="sayur.html">Sayur</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-bold" href="resep.html">Resep</a></li>
+                </ul>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="position-relative text-dark fs-5 me-2" onclick="checkCart(event)">
+                    <i class="bi bi-cart3"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
+                        id="cart-badge">0</span>
+                </a>
+
+                <div id="authButtonContainer">
+                    <a href="login.html" class="btn btn-primary-custom">Masuk <i
+                            class="bi bi-box-arrow-in-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="recipe-header text-center">
+        <div class="container">
+            <h1 class="fw-bold display-5">Mau Masak Apa Hari Ini?</h1>
+            <p class="lead text-white-50">Temukan ide masakan dan langsung beli bahan sayurannya di sini.</p>
+        </div>
+    </section>
+
+    <div class="container mb-5">
+        <div class="row g-4" id="recipeContainer">
+        </div>
+    </div>
+
+    <div class="modal fade" id="recipeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Nama Resep</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="row g-0">
+                        <div class="col-lg-7 p-4 border-end">
+                            <img src="" id="modalImg" class="w-100 rounded-3 mb-3"
+                                style="height: 300px; object-fit: cover;">
+                            <p id="modalDesc" class="text-muted fst-italic mb-4"></p>
+
+                            <div id="modalSteps"></div>
+                        </div>
+
+                        <div class="col-lg-5 p-4 bg-light">
+                            <h5 class="fw-bold mb-4"><i class="bi bi-cart-check"></i> Beli Bahan Sayuran</h5>
+                            <div class="alert alert-info small mb-3">
+                                <i class="bi bi-info-circle"></i> SiLijo hanya menjual sayur. Bahan seperti
+                                daging dan bumbu silakan beli di pasar dan toko terdekat.
+                            </div>
+
+                            <div class="buy-option-card mb-2">
+                                <span class="buy-option-title text-success">
+                                    <i class="bi bi-box-seam"></i> BELI PAKET
+                                </span>
+                                <p class="small text-muted">Otomatis membeli semua sayuran yang dibutuhkan untuk resep
+                                    ini.</p>
+
+                                <div id="packageList" class="scrollable-list"></div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold fs-5" id="packagePrice">Rp 0</span>
+                                    <button class="btn btn-success" onclick="processDirectBuy()">Beli Paket</button>
+                                </div>
+                            </div>
+
+                            <div class="text-center my-2 text-muted small">- ATAU -</div>
+
+                            <div class="buy-option-card mb-2">
+                                <span class="buy-option-title text-success">
+                                    <i class="bi bi-hand-index-thumb"></i> BELI SATUAN
+                                </span>
+                                <p class="small text-muted">Pilih sayuran tertentu yang ingin kamu beli.</p>
+
+                                <div id="ingredientForm" class="scrollable-list"></div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
+                                    <div>
+                                        <small class="d-block text-muted">Total Pilihan:</small>
+                                        <span class="fw-bold fs-5" id="customPrice">Rp 0</span>
+                                    </div>
+                                    <button class="btn btn-success" onclick="processCustomBuy()">Langsung
+                                        Beli</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-basket2-fill"></i> SiLijo</h4>
+                    <p class="text-white-50 small">Platform belanja sayur dan resep masakan terintegrasi. Membantu
+                        petani lokal, menyehatkan keluarga Indonesia.</p>
+                </div>
+                <div class="col-md-2 col-6 mb-4">
+                    <h6 class="fw-bold mb-3">Menu</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="sayur.html">Sayur</a></li>
+                        <li class="mb-2"><a href="resep.html">Resep</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-6 mb-4">
+                    <h6 class="fw-bold mb-3">Bantuan</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#">Cara Pesan</a></li>
+                        <li class="mb-2"><a href="#">Hubungi Kami</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Hubungi Kami</h6>
+                    <a href="#" class="fs-8"><i class="bi bi-whatsapp"> : 08465739392274</i></a><br>
+                    <a href="#" class="fs-8"><i class="bi bi-envelope"></i> : silijo@gmail.com</a><br>
+                    <a href="#" class="fs-8"><i class="bi bi-instagram"> : @silijo_aja</i></a>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center small text-white-50">
+                &copy; 2025 SiLijo Team. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- 1. DATABASE KATALOG SAYUR (Master Data) ---
+        // Ini harus sama persis namanya dengan yang ada di resep agar terdeteksi
+        const catalogProducts = [
+            { id: 1, name: 'Bayam Hijau Segar', price: 3500, unit: 'ikat', img: 'images/bayam.jpeg' },
+            { id: 2, name: 'Wortel Lokal', price: 12000, unit: 'kg', img: 'images/wortel (2).jpeg' },
+            { id: 3, name: 'Tomat Merah', price: 8000, unit: '500gr', img: 'images/tomat.jpeg' },
+            { id: 4, name: 'Brokoli Organik', price: 15000, unit: 'bonggol', img: 'images/brokoli.jpeg' },
+            { id: 5, name: 'Kentang Dieng', price: 18000, unit: 'kg', img: 'images/kentang.jpeg' },
+            { id: 6, name: 'Cabai Merah Keriting', price: 9000, unit: '100gr', img: 'images/cabai merah.jpeg' },
+            { id: 7, name: 'Selada Air', price: 5000, unit: 'ikat', img: 'images/selada air.jpeg' },
+            { id: 8, name: 'Terong Ungu', price: 7000, unit: '500gr', img: 'images/terong.jpeg' },
+            { id:9, name:'daun bawang', price:4000, unit:'ikat', img:'images/daun bawang.jpeg' },
+            { id: 9, name: 'Jagung Manis', price: 3000, unit: 'buah', img: 'images/jagung.jpeg' },
+            { id: 10, name: 'Kacang Panjang', price: 2000, unit: 'ikat', img: 'images/kacang.jpeg' },
+            { id: 11, name: 'Labu Siam', price: 2500, unit: 'buah', img: 'images/labu.jpeg' },
+            { id: 12, name: 'Daun Melinjo', price: 1500, unit: 'pack', img: 'images/melinjo.jpeg' },
+            { id: 13, name: 'Kembang Kol', price: 5000, unit: 'bonggol', img: 'images/kol.jpeg' },
+            { id: 14, name: 'Sawi Hijau', price: 2000, unit: 'ikat', img: 'images/sawi.jpeg' },
+        ];
+
+        // --- 2. DATA RESEP ---
+        // ingredients hanya berisi nama dan keterangan untuk resep
+        // Harga dan ID akan diambil otomatis dari catalogProducts
+        const recipes = [
+            {
+                id: 1,
+                name: "Sayur Asem Jakarta",
+                desc: "Kuah segar dengan rasa asam manis pedas.",
+                img: "images/sayur asem.jpeg",
+                time: "30 Menit",
+                difficulty: "Mudah",
+                steps: ["Siapkan bahan.", "Rebus air dan jagung.", "Masukkan bumbu halus.", "Masukan sayuran sisa.", "Koreksi rasa."],
+                // List bahan untuk resep (Campuran sayur dan non-sayur)
+                ingredientsList: [
+                    "Jagung Manis", "Kacang Panjang", "Labu Siam", "Daun Melinjo",
+                    "Lengkuas", "Daun Salam", "Asem Jawa" // Bumbu dapur dianggap stok user/beli pasar
+                ]
+            },
+            {
+                id: 2,
+                name: "Capcay Goreng Seafood",
+                desc: "Tumisan aneka sayur dengan udang dan bakso.",
+                img: "images/capcay.jpeg",
+                time: "20 Menit",
+                difficulty: "Sedang",
+                steps: ["Potong sayuran.", "Tumis bawang.", "Masukan udang & bakso.", "Masukan sayur.", "Beri bumbu & maizena."],
+                ingredientsList: [
+                    "Wortel Lokal", "Kembang Kol", "Sawi Hijau",
+                    "Udang Segar", "Bakso Ikan", "Bawang Putih"
+                ]
+            },
+            {
+                id: 3,
+                name: "Sup Ayam Kampung",
+                desc: "Sup hangat bergizi tinggi untuk keluarga.",
+                img: "images/sup ayam.jpeg",
+                time: "45 Menit",
+                difficulty: "Mudah",
+                steps: ["Rebus ayam.", "Tumis bumbu sup.", "Masukan sayuran.", "Masukan daun bawang.", "Sajikan."],
+                ingredientsList: [
+                    "Ayam Kampung", "Wortel Lokal", "Kentang Dieng", "Daun Bawang",
+                    "Bumbu Sup"
+                ]
+            }
+        ];
+
+        // --- 3. HELPER: MENCARI PRODUK DARI KATALOG ---
+        function getSellableItems(ingredientNames) {
+            let sellable = [];
+            ingredientNames.forEach(name => {
+                // Cari apakah nama bahan ada di database katalog
+                const product = catalogProducts.find(p => p.name === name);
+                if (product) {
+                    sellable.push(product);
+                }
+            });
+            return sellable;
+        }
+
+        // --- 4. RENDER GRID RESEP DI HALAMAN UTAMA ---
+        const container = document.getElementById('recipeContainer');
+
+        recipes.forEach(recipe => {
+            // Hitung estimasi harga paket (Hanya item yang ada di katalog)
+            const sellableItems = getSellableItems(recipe.ingredientsList);
+            const totalPrice = sellableItems.reduce((sum, item) => sum + item.price, 0);
+            const formattedPrice = new Intl.NumberFormat('id-ID').format(totalPrice);
+
+            const html = `
+            <div class="col-md-4">
+                <div class="recipe-card">
+                    <img src="${recipe.img}" class="recipe-img" alt="${recipe.name}">
+                    <div class="recipe-body">
+                        <h5 class="fw-bold">${recipe.name}</h5>
+                        <div class="recipe-meta d-flex justify-content-between">
+                            <span><i class="bi bi-alarm"></i> ${recipe.time}</span>
+                            <span><i class="bi bi-bar-chart"></i> ${recipe.difficulty}</span>
+                        </div>
+                        <p class="text-muted small text-truncate">${recipe.desc}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="text-success fw-bold small">Paket Sayur: Rp ${formattedPrice}</span>
+                            <button class="btn btn-sm btn-primary-custom" 
+                                style="background-color: var(--primary-green); color: white;"
+                                onclick="openDetail(${recipe.id})">
+                                Lihat Detail
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+            container.innerHTML += html;
+        });
+
+        // --- 5. LOGIKA MODAL DETAIL ---
+        const modalElement = new bootstrap.Modal(document.getElementById('recipeModal'));
+        let currentSellableItems = []; // Menyimpan item yang bisa dijual di modal saat ini
+
+        function openDetail(id) {
+            const recipe = recipes.find(r => r.id === id);
+
+            // A. ISI INFO MODAL
+            document.getElementById('modalTitle').innerText = recipe.name;
+            document.getElementById('modalImg').src = recipe.img;
+            document.getElementById('modalDesc').innerText = recipe.desc;
+
+            // B. TAMPILKAN LIST SEMUA BAHAN (INFORMASI RESEP)
+            // Kita sisipkan list bahan SEBELUM langkah memasak
+            let ingredientsHtml = '<h6 class="fw-bold mb-2"><i class="bi bi-basket"></i> Bahan-bahan:</h6><ul class="text-muted small mb-4">';
+            recipe.ingredientsList.forEach(ing => {
+                // Cek apakah bahan ini ada di katalog (dijual) atau tidak
+                const isSold = catalogProducts.some(p => p.name === ing);
+                const icon = isSold ? '<i class="bi bi-check-circle-fill text-success"></i>' : '<i class="bi bi-dash-circle text-secondary"></i>';
+                ingredientsHtml += `<li>${icon} ${ing}</li>`;
+            });
+            ingredientsHtml += '</ul>';
+
+            let stepsHtml = `<h6 class="fw-bold mb-3"><i class="bi bi-list-ol text-success"></i> Langkah Memasak:</h6>`;
+            stepsHtml += recipe.steps.map((step, index) =>
+                `<div class="d-flex mb-2"><span class="step-number flex-shrink-0">${index + 1}</span> <span>${step}</span></div>`
+            ).join('');
+
+            // Gabungkan Bahan + Langkah di kolom kiri
+            document.getElementById('modalSteps').innerHTML = ingredientsHtml + stepsHtml;
+
+
+            // C. LOGIKA PENJUALAN (Hanya Barang Katalog)
+            currentSellableItems = getSellableItems(recipe.ingredientsList);
+
+            // 1. Render List Paket
+            let totalPackage = 0;
+            const packageListEl = document.getElementById('packageList');
+
+            if (currentSellableItems.length > 0) {
+                packageListEl.innerHTML = currentSellableItems.map(item => {
+                    totalPackage += item.price;
+                    return `<div class="d-flex justify-content-between border-bottom border-light py-1">
+                            <span>- ${item.name} <small class="text-muted fst-italic">/ ${item.unit}</small></span>
+                            <small class="text-muted">${formatRupiah(item.price)}</small>
+                        </div>`;
+                }).join('');
+            } else {
+                packageListEl.innerHTML = '<div class="text-danger small">Maaf, stok sayur untuk resep ini sedang kosong.</div>';
+            }
+            document.getElementById('packagePrice').innerText = formatRupiah(totalPackage);
+
+            // 2. Render Checkbox Satuan
+            const ingredientForm = document.getElementById('ingredientForm');
+            ingredientForm.innerHTML = '';
+
+            if (currentSellableItems.length > 0) {
+                currentSellableItems.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'ingredient-check-item';
+                    div.innerHTML = `
+                    <div class="form-check">
+                            <input class="form-check-input item-checkbox" type="checkbox" value="${item.price}" 
+                                   data-id="${item.id}" id="check-${index}" onchange="calculateCustomTotal()">
+                            <label class="form-check-label" for="check-${index}">
+                                ${item.name} <small class="text-muted fst-italic"> / ${item.unit}</small>
+                            </label>
+                        </div>
+                    <span>${formatRupiah(item.price)}</span>
+                `;
+                    ingredientForm.appendChild(div);
+                });
+            } else {
+                ingredientForm.innerHTML = '<div class="text-muted small text-center">Tidak ada sayur tersedia.</div>';
+            }
+
+            document.getElementById('customPrice').innerText = 'Rp 0';
+
+            modalElement.show();
+        }
+
+        // --- 6. HITUNG TOTAL PILIHAN SENDIRI ---
+        function calculateCustomTotal() {
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            let total = 0;
+            checkboxes.forEach(box => total += parseInt(box.value));
+            document.getElementById('customPrice').innerText = formatRupiah(total);
+        }
+
+        // --- 7. PROSES PEMBELIAN ---
+
+        // A. BELI PAKET (Langsung ke Pembayaran)
+        // A. BELI PAKET (Langsung ke Pembayaran)
+        function processDirectBuy() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                alert('Silakan login dulu.'); window.location.href = 'login.html'; return;
+            }
+
+            if (currentSellableItems.length === 0) { alert("Stok kosong."); return; }
+
+            // Format data agar sesuai standar checkout (tambah qty & img)
+            const itemsToBuy = currentSellableItems.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                unit: item.unit,
+                img: item.img, // Gambar asli dari database
+                qty: 1,
+                selected: true
+            }));
+
+            localStorage.setItem('silijoCheckout', JSON.stringify(itemsToBuy));
+            window.location.href = 'pembayaran.html';
+        }
+
+        // B. BELI SATUAN (Langsung ke Pembayaran)
+        function processCustomBuy() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                alert('Silakan login dulu.'); window.location.href = 'login.html'; return;
+            }
+
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            if (checkboxes.length === 0) { alert("Pilih minimal 1 sayur."); return; }
+
+            let itemsToBuy = [];
+            checkboxes.forEach(box => {
+                const id = parseInt(box.getAttribute('data-id'));
+                // Cari data lengkap di database katalog (catalogProducts)
+                const product = catalogProducts.find(p => p.id === id);
+
+                if (product) {
+                    itemsToBuy.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        unit: product.unit,
+                        img: product.img,
+                        qty: 1,
+                        selected: true
+                    });
+                }
+            });
+
+            localStorage.setItem('silijoCheckout', JSON.stringify(itemsToBuy));
+            window.location.href = 'pembayaran.html';
+        }
+
+        // --- HELPER ---
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
+        }
+
+        function checkCart(e) {
+            e.preventDefault();
+            let cart = JSON.parse(localStorage.getItem('silijoCart')) || [];
+            if (cart.length === 0) {
+                alert('Keranjang masih kosong! Yuk belanja dulu.');
+            } else {
+                window.location.href = 'keranjang.html';
+            }
+        }
+
+        function updateCartBadge() {
+            let cart = JSON.parse(localStorage.getItem('silijoCart')) || [];
+            let totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            if (badge) badge.innerText = totalQty;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCartBadge();
+            const authContainer = document.getElementById('authButtonContainer');
+            if (authContainer && localStorage.getItem('isLoggedIn') === 'true') {
+                const userName = localStorage.getItem('userName') || 'User';
+                authContainer.innerHTML = `
+            <div class="dropdown">
+                            <button class="btn btn-outline-success dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px;">
+                                <i class="bi bi-person-circle"></i> Hai, ${userName}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a class="dropdown-item" href="riwayat.html"><i class="bi bi-receipt"></i> Riwayat Pesanan</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="logoutUser()"><i class="bi bi-box-arrow-right"></i> Keluar</a></li>
+                            </ul>
+            </div>`;
+            }
+        });
+
+        function logoutUser() {
+            if (confirm('Yakin ingin keluar?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+
+</html>

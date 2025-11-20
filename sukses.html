@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesanan Berhasil - SiLijo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-green: #1a3c24;
+            --light-bg: #F5F7F6;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: white;
+            height: 100vh; /* Dikembalikan ke 100vh */
+            /* --- KEMBALIKAN KE TENGAH --- */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center; 
+            /* --------------------------- */
+        }
+
+        .container {
+            /* Hapus properti pendorong ke kiri */
+            max-width: 600px; 
+            padding-top: 0; 
+            margin: 0 auto; 
+        }
+
+        .success-card {
+            max-width: 500px;
+            padding: 40px;
+            /* Pastikan teks di dalam card kembali ke tengah */
+            text-align: center;
+        }
+
+        /* Animasi Ikon Centang */
+        .icon-box {
+            width: 100px;
+            height: 100px;
+            background-color: #e8f5e9;
+            color: var(--primary-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* --- KEMBALIKAN MARGIN: Menggunakan auto agar kembali ke tengah --- */
+            margin: 0 auto 30px; 
+            /* ------------------------------------------------------------- */
+            animation: popUp 0.5s ease-out forwards;
+        }
+
+        .icon-box i {
+            font-size: 3.5rem;
+        }
+
+        @keyframes popUp {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            80% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .btn-home {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .btn-home:hover {
+            background-color: #14301c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 60, 36, 0.2);
+        }
+
+        .order-id {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 8px;
+            /* PENTING: Karena card kembali ke center, ini akan tetap di tengah */
+            display: inline-block; 
+            margin: 15px auto; 
+            color: #666;
+            font-size: 0.9rem;
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="successSound" src="images/notifsukses.mp3"></audio>
+
+    <div class="container">
+        <div class="success-card">
+            <div class="icon-box">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <h2 class="fw-bold mb-3" style="color: #1a3c24;">Pesanan Berhasil!</h2>
+            <p class="text-muted">Terima kasih sudah berbelanja di SiLijo.<br>Pesanan Anda sedang kami siapkan dan akan
+                segera dikirim.</p>
+
+            <div class="order-id" id="trxIdDisplay">#ID-LOADING...</div>
+
+            <br>
+
+            <a href="index.html" class="btn-home">
+                Kembali ke Beranda
+            </a>
+
+            <div class="mt-4">
+                <a href="riwayat.html" class="text-muted small text-decoration-none">Lihat Riwayat Pesanan</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1. Mainkan Suara
+            const audio = document.getElementById("successSound");
+            if (audio) {
+                audio.volume = 0.5; 
+                audio.play().catch(error => console.log("Audio play prevented:", error));
+            }
+
+            // 2. Generate ID Transaksi dari URL (atau random jika refresh)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlTrxId = urlParams.get('id');
+            let finalTrxId = urlTrxId ? ('#' + urlTrxId) : ('#TRX-' + Math.floor(Math.random() * 1000000));
+            
+            document.getElementById('trxIdDisplay').innerText = finalTrxId;
+
+            // --- 3. SIMPAN KE RIWAYAT (CRITICAL SECTION) ---
+            
+            // Ambil data dari checkout buffer
+            const checkoutItems = JSON.parse(localStorage.getItem('silijoCheckout'));
+            // Fallback: jika checkout kosong, coba ambil dari totalPayment (mungkin refresh)
+            const grandTotal = localStorage.getItem('totalPayment') || 'Rp 0'; 
+
+            // PENTING: Hanya proses jika ada barang yang di-checkout
+            if (checkoutItems && checkoutItems.length > 0) {
+                
+                // Ambil history lama
+                const history = JSON.parse(localStorage.getItem('silijoHistory')) || [];
+
+                // Cek apakah ID transaksi ini sudah ada di history? (Mencegah duplikat saat refresh)
+                // Kita cek berdasarkan ID yang ada di URL. Jika URL tidak ada ID, berarti ini refresh/akses langsung
+                const isDuplicate = history.some(order => order.id === finalTrxId);
+
+                if (!isDuplicate) {
+                    const newOrder = {
+                        id: finalTrxId,
+                        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                        status: 'Dikemas',
+                        total: grandTotal,
+                        items: checkoutItems // Array item lengkap
+                    };
+
+                    // Simpan ke history (paling atas)
+                    history.unshift(newOrder);
+                    localStorage.setItem('silijoHistory', JSON.stringify(history));
+                    
+                    console.log("Pesanan berhasil disimpan ke Riwayat:", newOrder);
+
+                    // --- BERSIHKAN KERANJANG & CHECKOUT BUFFER ---
+                    // 1. Hapus buffer checkout agar tidak diproses ulang
+                    localStorage.removeItem('silijoCheckout');
+                    
+                    // 2. Hapus item yang dibeli dari keranjang utama (silijoCart)
+                    // Cari item mana saja yang ID-nya ada di checkoutItems
+                    let cart = JSON.parse(localStorage.getItem('silijoCart')) || [];
+                    const boughtIds = checkoutItems.map(i => i.id);
+                    
+                    // Simpan sisa item yang TIDAK dibeli
+                    const remainingCart = cart.filter(item => !boughtIds.includes(item.id));
+                    localStorage.setItem('silijoCart', JSON.stringify(remainingCart));
+                }
+            } else {
+                console.log("Tidak ada data checkout baru untuk disimpan.");
+            }
+        });
+    </script>
+
+</body>
+
+</html>

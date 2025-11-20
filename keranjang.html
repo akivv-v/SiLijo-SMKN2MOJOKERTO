@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja - SiLijo</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-green: #1a3c24;
+            --dark-green: #14301c;
+            --accent-green: #4CAF50;
+            --light-bg: #F5F7F6;
+            --text-dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--light-bg);
+        }
+
+        /* --- 1. NAVBAR SIMPLE --- */
+        .navbar {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        }
+
+        .container-navbar {
+            margin-left: 25px;
+        }
+
+        .back-btn {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .back-btn:hover { color: var(--primary-green); }
+        .navbar-title { font-weight: 700; font-size: 1.2rem; }
+
+        /* --- 2. LAYOUT UTAMA --- */
+        .cart-container { margin-top: 100px; margin-bottom: 50px; }
+
+        /* SELECT ALL HEADER */
+        .select-all-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* ITEM CARD */
+        .cart-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .cart-item:hover { border-color: #ddd; }
+
+        .item-checkbox {
+            width: 20px; height: 20px;
+            accent-color: var(--primary-green);
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .cart-img {
+            width: 80px; height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+        /* QTY BUTTONS */
+        .qty-wrapper {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+        .qty-btn {
+            width: 28px; height: 28px;
+            border: none; background: white;
+            border-radius: 6px;
+            color: var(--primary-green);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .qty-val {
+            width: 35px; text-align: center;
+            font-weight: 600; font-size: 0.9rem;
+            border: none; background: transparent;
+        }
+
+        /* --- 3. SUMMARY CARD (AESTHETIC) --- */
+        .summary-card {
+            background: white;
+            border-radius: 16px; /* Lebih bulat */
+            padding: 30px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .summary-count {
+            font-size: 0.95rem;
+            color: #555;
+            font-weight: 500;
+            background: #f0f5f1;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+
+        .btn-pay {
+            width: 100%;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 4px 15px rgba(26, 60, 36, 0.2);
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 25px;
+            padding-right: 25px;
+        }
+        
+        .btn-pay:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 60, 36, 0.25);
+        }
+
+        .btn-pay:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .link-continue {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .link-continue:hover { color: var(--primary-green); }
+
+        .btn-primary-custom { 
+            background-color: var(--primary-green); 
+            border: none; color: white; 
+            padding: 10px 25px; 
+            border-radius: 8px; 
+            font-weight: 600; 
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar fixed-top">
+        <div class="container-navbar">
+            <div class="d-flex align-items-center w-100">
+                <a href="javascript:history.back()" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                    <span class="navbar-title">Keranjang Sayur</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container cart-container">
+        <div class="row">
+            <div class="col-lg-8">
+                
+                <div id="selectAllContainer" class="select-all-card d-none">
+                    <input type="checkbox" class="item-checkbox" id="selectAll" onchange="toggleSelectAll()">
+                    <label for="selectAll" class="fw-bold cursor-pointer m-0">Pilih Semua</label>
+                </div>
+
+                <div id="cartItemsList"></div>
+
+                <div id="emptyCartState" class="text-center py-5 d-none">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" width="120" class="mb-4 opacity-50" alt="Empty">
+                    <h4 class="fw-bold text-secondary">Keranjang Kosong</h4>
+                    <p class="text-muted mb-4">Yuk isi dengan sayuran segar!</p>
+                    <a href="sayur.html" class="btn-primary-custom">Mulai Belanja</a>
+                </div>
+            </div>
+
+            <div class="col-lg-4" id="summaryColumn" style="display: none;">
+                <div class="summary-card">
+                    
+                    <div class="summary-label">Total Pembayaran</div>
+                    <div class="summary-price" id="grandTotal">Rp 0</div>
+                    
+                    <div id="selectedCountText" class="summary-count">0 Barang</div>
+
+                    <button class="btn-pay" id="btnCheckout" onclick="processCheckout()" disabled>
+                        <span>Bayar Sekarang</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+
+                    <a href="sayur.html" class="link-continue">
+                        Lanjut Belanja
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // --- 1. LOAD DATA ---
+        let cartData = JSON.parse(localStorage.getItem('silijoCart')) || [];
+
+        const cartContainer = document.getElementById('cartItemsList');
+        const emptyState = document.getElementById('emptyCartState');
+        const selectAllContainer = document.getElementById('selectAllContainer');
+        const summaryColumn = document.getElementById('summaryColumn');
+
+        function saveCart() {
+            localStorage.setItem('silijoCart', JSON.stringify(cartData));
+            renderCart();
+        }
+
+        function renderCart() {
+            cartContainer.innerHTML = '';
+            let grandTotal = 0;
+            let selectedCount = 0;
+
+            if (cartData.length === 0) {
+                emptyState.classList.remove('d-none');
+                selectAllContainer.classList.add('d-none');
+                summaryColumn.style.display = 'none';
+                return;
+            } else {
+                emptyState.classList.add('d-none');
+                selectAllContainer.classList.remove('d-none');
+                summaryColumn.style.display = 'block';
+            }
+
+            const allSelected = cartData.every(item => item.selected);
+            document.getElementById('selectAll').checked = allSelected;
+
+            cartData.forEach(item => {
+                const itemTotal = item.price * item.qty;
+
+                if (item.selected) {
+                    grandTotal += itemTotal;
+                    selectedCount++;
+                }
+
+                const html = `
+                    <div class="cart-item">
+                        <input type="checkbox" class="item-checkbox" 
+                            ${item.selected ? 'checked' : ''} 
+                            onchange="toggleSelectItem(${item.id})">
+
+                        <img src="${item.img}" class="cart-img">
+                        
+                        <div class="flex-grow-1">
+                            <h6 class="fw-bold mb-1 text-dark">${item.name}</h6>
+                            <p class="text-muted small mb-0">Rp ${formatRupiah(item.price)} / ${item.unit}</p>
+                        </div>
+
+                        <div class="text-end d-flex flex-column align-items-end gap-2">
+                            <div class="qty-wrapper">
+                                <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                                <input type="text" class="qty-val" value="${item.qty}" readonly>
+                                <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mt-1">
+                                <span class="fw-bold text-success me-3">Rp ${formatRupiah(itemTotal)}</span>
+                                <i class="bi bi-trash text-secondary" style="cursor:pointer;" onclick="removeItem(${item.id})"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cartContainer.innerHTML += html;
+            });
+
+            updateSummary(grandTotal, selectedCount);
+        }
+
+        // --- LOGIC ---
+        function toggleSelectItem(id) {
+            const idx = cartData.findIndex(i => i.id === id);
+            if(idx !== -1) { cartData[idx].selected = !cartData[idx].selected; saveCart(); }
+        }
+
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAll').checked;
+            cartData.forEach(i => i.selected = isChecked);
+            saveCart();
+        }
+
+        function updateQty(id, change) {
+            const idx = cartData.findIndex(i => i.id === id);
+            if(idx !== -1) {
+                const newQty = cartData[idx].qty + change;
+                if(newQty > 0) {
+                    cartData[idx].qty = newQty;
+                    saveCart();
+                } else {
+                    if(confirm('Hapus item ini?')) {
+                        cartData.splice(idx, 1);
+                        saveCart();
+                    }
+                }
+            }
+        }
+
+        function removeItem(id) {
+            if(confirm('Hapus item ini?')) {
+                cartData = cartData.filter(i => i.id !== id);
+                saveCart();
+            }
+        }
+
+        function updateSummary(total, count) {
+            document.getElementById('grandTotal').innerText = `Rp ${formatRupiah(total)}`;
+            
+            // Update text aesthetics
+            const countText = count === 0 ? '0 Barang' : `${count} Barang`;
+            document.getElementById('selectedCountText').innerText = countText;
+
+            const btn = document.getElementById('btnCheckout');
+            btn.disabled = (count === 0);
+        }
+
+        function processCheckout() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn !== 'true') {
+                alert('Silakan Masuk/Login terlebih dahulu.');
+                window.location.href = 'login.html';
+            } else {
+                // 1. Ambil Item yang Dicentang
+                const itemsToBuy = cartData.filter(item => item.selected);
+                
+                if(itemsToBuy.length === 0) {
+                    alert("Pilih minimal 1 barang!");
+                    return;
+                }
+
+                // 2. Simpan ke Buffer 'silijoCheckout'
+                localStorage.setItem('silijoCheckout', JSON.stringify(itemsToBuy));
+                
+                // 3. Redirect
+                const btn = document.getElementById('btnCheckout');
+                btn.innerHTML = '<span>Memproses...</span>';
+                setTimeout(() => { window.location.href = 'pembayaran.html'; }, 500);
+            }
+        }
+
+        function formatRupiah(num) {
+            return new Intl.NumberFormat('id-ID').format(num);
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+</body>
+</html>
