@@ -114,7 +114,7 @@
 
 <body>
 
-    <audio id="successSound" src="images/notifsukses.mp3"></audio>
+    <audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
     <div class="container">
         <div class="success-card">
@@ -145,64 +145,50 @@
             // 1. Mainkan Suara
             const audio = document.getElementById("successSound");
             if (audio) {
-                audio.volume = 0.5; 
+                audio.volume = 0.5; // Set volume 50%
                 audio.play().catch(error => console.log("Audio play prevented:", error));
             }
 
-            // 2. Generate ID Transaksi dari URL (atau random jika refresh)
+            // 2. Generate ID Transaksi (TIDAK ADA PERUBAHAN DI SINI)
             const urlParams = new URLSearchParams(window.location.search);
-            const urlTrxId = urlParams.get('id');
-            let finalTrxId = urlTrxId ? ('#' + urlTrxId) : ('#TRX-' + Math.floor(Math.random() * 1000000));
-            
+            const trxId = urlParams.get('id');
+
+            let finalTrxId = '#TRX-' + Math.floor(Math.random() * 1000000);
+            if (trxId) {
+                finalTrxId = '#' + trxId;
+            }
             document.getElementById('trxIdDisplay').innerText = finalTrxId;
 
-            // --- 3. SIMPAN KE RIWAYAT (CRITICAL SECTION) ---
-            
-            // Ambil data dari checkout buffer
-            const checkoutItems = JSON.parse(localStorage.getItem('silijoCheckout'));
-            // Fallback: jika checkout kosong, coba ambil dari totalPayment (mungkin refresh)
-            const grandTotal = localStorage.getItem('totalPayment') || 'Rp 0'; 
 
-            // PENTING: Hanya proses jika ada barang yang di-checkout
-            if (checkoutItems && checkoutItems.length > 0) {
-                
-                // Ambil history lama
-                const history = JSON.parse(localStorage.getItem('silijoHistory')) || [];
+            // --- 3. SIMPAN RIWAYAT TRANSAKSI DENGAN DATA LENGKAP ---
 
-                // Cek apakah ID transaksi ini sudah ada di history? (Mencegah duplikat saat refresh)
-                // Kita cek berdasarkan ID yang ada di URL. Jika URL tidak ada ID, berarti ini refresh/akses langsung
-                const isDuplicate = history.some(order => order.id === finalTrxId);
+            // A. Ambil semua data yang disimpan saat checkout
+            const history = JSON.parse(localStorage.getItem('silijoHistory')) || [];
+            const checkoutItems = JSON.parse(localStorage.getItem('silijoCheckout')) || [];
+            const grandTotal = localStorage.getItem('silijoGrandTotal') || 'Rp -'; 
+            const recipeName = localStorage.getItem('silijoCurrentRecipeName') || null; 
 
-                if (!isDuplicate) {
-                    const newOrder = {
-                        id: finalTrxId,
-                        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-                        status: 'Dikemas',
-                        total: grandTotal,
-                        items: checkoutItems // Array item lengkap
-                    };
+            // B. Buat objek pesanan baru
+            const newOrder = {
+                id: finalTrxId,
+                date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                status: 'Dikemas',
+                total: grandTotal,
+                items: checkoutItems,
+                recipeName: recipeName 
+            };
 
-                    // Simpan ke history (paling atas)
-                    history.unshift(newOrder);
-                    localStorage.setItem('silijoHistory', JSON.stringify(history));
-                    
-                    console.log("Pesanan berhasil disimpan ke Riwayat:", newOrder);
+            // C. Cek duplikasi
+            const lastOrder = history.length > 0 ? history[0] : null;
 
-                    // --- BERSIHKAN KERANJANG & CHECKOUT BUFFER ---
-                    // 1. Hapus buffer checkout agar tidak diproses ulang
-                    localStorage.removeItem('silijoCheckout');
-                    
-                    // 2. Hapus item yang dibeli dari keranjang utama (silijoCart)
-                    // Cari item mana saja yang ID-nya ada di checkoutItems
-                    let cart = JSON.parse(localStorage.getItem('silijoCart')) || [];
-                    const boughtIds = checkoutItems.map(i => i.id);
-                    
-                    // Simpan sisa item yang TIDAK dibeli
-                    const remainingCart = cart.filter(item => !boughtIds.includes(item.id));
-                    localStorage.setItem('silijoCart', JSON.stringify(remainingCart));
-                }
-            } else {
-                console.log("Tidak ada data checkout baru untuk disimpan.");
+            if (!lastOrder || lastOrder.id !== newOrder.id) {
+                history.unshift(newOrder); 
+                localStorage.setItem('silijoHistory', JSON.stringify(history));
+
+                // D. PEMBERSIHAN DATA HANYA DILAKUKAN SEKALI DI SINI
+                localStorage.removeItem('silijoCheckout');
+                localStorage.removeItem('silijoGrandTotal');
+                localStorage.removeItem('silijoCurrentRecipeName');
             }
         });
     </script>
